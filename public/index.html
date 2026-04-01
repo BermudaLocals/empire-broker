@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Empire Broker Pro — Login</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style> html, body { height: 100%; } body { display: flex; align-items: center; justify-content: center; } </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="icon">🏛️</div>
+        <h1>Empire Broker Pro</h1>
+        <p>Mortgage & Real Estate Platform</p>
+      </div>
+      
+      <div class="login-tabs">
+        <button class="login-tab active" onclick="switchTab('login')" id="tab-login">Login</button>
+        <button class="login-tab" onclick="switchTab('register')" id="tab-register">Register</button>
+      </div>
+      
+      <!-- Login Form -->
+      <form id="loginForm" class="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="loginEmail" class="form-control" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg w-full">Sign In</button>
+        <p id="loginError" class="text-error mt-4 hidden"></p>
+      </form>
+      
+      <!-- Register Form -->
+      <form id="registerForm" class="login-form hidden" onsubmit="handleRegister(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="regName" class="form-control" placeholder="John Doe" required>
+          </div>
+          <div class="form-group">
+            <label>Phone (optional)</label>
+            <input type="tel" id="regPhone" class="form-control" placeholder="(555) 123-4567">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="regEmail" class="form-control" placeholder="your@email.com" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="regPassword" class="form-control" placeholder="Min 6 characters" minlength="6" required>
+          </div>
+          <div class="form-group">
+            <label>Role</label>
+            <select id="regRole" class="form-control" required>
+              <option value="">Select Role</option>
+              <option value="mortgage_broker">🏦 Mortgage Broker</option>
+              <option value="agent">🏠 Real Estate Agent</option>
+              <option value="broker">👔 Broker/Manager</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg w-full">Create Account</button>
+        <p id="regError" class="text-error mt-4 hidden"></p>
+      </form>
+      
+      <div class="demo-accounts">
+        <h4>⚡ Quick Demo Login</h4>
+        <button class="demo-btn" onclick="quickLogin('demo@mortgage.com','demo123')">
+          <strong>🏦 Mortgage Broker</strong><br>
+          demo@mortgage.com / demo123
+        </button>
+        <button class="demo-btn" onclick="quickLogin('demo@agent.com','demo123')">
+          <strong>🏠 Real Estate Agent</strong><br>
+          demo@agent.com / demo123
+        </button>
+        <button class="demo-btn" onclick="quickLogin('demo@broker.com','demo123')">
+          <strong>👔 Office Broker</strong><br>
+          demo@broker.com / demo123
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="toast-container" class="toast-container"></div>
+  
+  <script src="/js/app.js"></script>
+  <script>
+    function switchTab(tab) {
+      document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+      document.getElementById('registerForm').classList.toggle('hidden', tab === 'login');
+      document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+    }
+    
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const errEl = document.getElementById('loginError');
+      errEl.classList.add('hidden');
+      try {
+        await login(email, password);
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.classList.remove('hidden');
+      }
+    }
+    
+    async function handleRegister(e) {
+      e.preventDefault();
+      const name = document.getElementById('regName').value;
+      const email = document.getElementById('regEmail').value;
+      const password = document.getElementById('regPassword').value;
+      const role = document.getElementById('regRole').value;
+      const phone = document.getElementById('regPhone').value || null;
+      const errEl = document.getElementById('regError');
+      errEl.classList.add('hidden');
+      try {
+        await register(name, email, password, role, phone);
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.classList.remove('hidden');
+      }
+    }
+    
+    async function quickLogin(email, password) {
+      const errEl = document.getElementById('loginError');
+      errEl.classList.add('hidden');
+      try {
+        await login(email, password);
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.classList.remove('hidden');
+      }
+    }
+    
+    // Auto-redirect if already logged in
+    if (isLoggedIn()) { redirectToDashboard(getUser().role); }
+  </script>
+</body>
+</html>

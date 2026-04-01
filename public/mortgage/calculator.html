@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loan Calculator — Empire Broker Pro</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="mobile-toggle">☰</div>
+      <div class="sidebar-logo"><div class="logo-icon">🏛️</div><h1>Empire<small>Broker Pro</small></h1></div>
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="user-avatar">?</div>
+          <div class="user-details"><div class="name" id="user-name">User</div><div class="role" id="user-role">Role</div></div>
+          <button class="logout-btn" data-logout>🚪</button>
+        </div>
+      </div>
+    </aside>
+    
+    <main class="main-content">
+      <header class="page-header">
+        <h2>🧮 Loan Calculator</h2>
+        <p class="subtitle">Calculate mortgage payments and explore scenarios</p>
+      </header>
+      
+      <div class="calc-grid">
+        <!-- Calculator Form -->
+        <div class="card">
+          <div class="card-header"><h3>Loan Parameters</h3></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Purchase Price</label>
+              <input type="number" id="purchasePrice" class="form-control" value="500000" min="0" step="1000" oninput="updateCalculator()">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Down Payment ($)</label>
+                <input type="number" id="downPayment" class="form-control" value="100000" oninput="onDownDollarsChange()">
+              </div>
+              <div class="form-group">
+                <label>Down Payment (%)</label>
+                <input type="number" id="downPercent" class="form-control" value="20" min="0" max="100" step="0.1" oninput="onDownPercentChange()">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Interest Rate (%)</label>
+                <input type="number" id="interestRate" class="form-control" value="7.5" min="0" max="20" step="0.01" oninput="updateCalculator()">
+              </div>
+              <div class="form-group">
+                <label>Loan Term (Years)</label>
+                <select id="loanTerm" class="form-control" onchange="updateCalculator()">
+                  <option value="15">15 years</option>
+                  <option value="20">20 years</option>
+                  <option value="30" selected>30 years</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Property Tax Rate (%/year)</label>
+                <input type="number" id="taxRate" class="form-control" value="1.2" min="0" max="5" step="0.1" oninput="updateCalculator()">
+              </div>
+              <div class="form-group">
+                <label>Homeowners Insurance ($/year)</label>
+                <input type="number" id="insurance" class="form-control" value="1200" min="0" step="100" oninput="updateCalculator()">
+              </div>
+            </div>
+            <div class="form-group">
+              <label><input type="checkbox" id="includePMI" checked onchange="updateCalculator()"> Include PMI (if down payment < 20%)</label>
+            </div>
+            <div class="form-group mt-4">
+              <label>Scenario Name</label>
+              <input type="text" id="scenarioName" class="form-control" placeholder="My Scenario">
+              <button type="button" class="btn btn-secondary mt-4" onclick="saveScenario()">💾 Save Scenario</button>
+              <button type="button" class="btn btn-danger btn-sm mt-4" onclick="clearScenarios()">Clear All</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Results Card -->
+        <div class="card">
+          <div class="card-header"><h3>Monthly Payment Breakdown</h3></div>
+          <div class="card-body">
+            <div class="calc-result text-center">
+              <div class="big-number text-gold" id="totalPayment">$0/mo</div>
+              <div class="label">Total Monthly Payment</div>
+            </div>
+            <div class="grid-2 mt-4">
+              <div class="calc-result"><div class="stat-value" id="piPayment">$0.00</div><div class="label">Principal & Interest</div></div>
+              <div class="calc-result"><div class="stat-value" id="taxPayment">$0.00</div><div class="label">Property Taxes</div></div>
+            </div>
+            <div class="grid-2 mt-4">
+              <div class="calc-result"><div class="stat-value" id="insPayment">$100.00</div><div class="label">Insurance</div></div>
+              <div class="calc-result"><div class="stat-value" id="pmiPayment">$0.00</div><div class="label">PMI</div></div>
+            </div>
+            <div class="grid-2 mt-4">
+              <div class="calc-result"><div class="stat-value text-success" id="loanAmount">$400,000</div><div class="label">Loan Amount</div></div>
+              <div class="calc-result"><div class="stat-value text-success" id="downPaymentPercent">20.0%</div><div class="label">Down Payment</div></div>
+            </div>
+            <div class="chart-container mt-8" style="height:200px">
+              <canvas id="paymentChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Scenarios Comparison -->
+      <div class="card mt-8">
+        <div class="card-header"><h3>📊 Saved Scenarios</h3></div>
+        <div class="card-body">
+          <div class="comparison-grid" id="scenariosList">
+            <p class="text-muted">No saved scenarios yet. Calculate a loan and save scenarios to compare.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Balance Chart -->
+      <div class="card mt-8">
+        <div class="card-header"><h3>📈 Amortization Schedule (10 Years)</h3></div>
+        <div class="card-body" style="height:300px">
+          <canvas id="balanceChart"></canvas>
+        </div>
+      </div>
+      
+      <!-- Amortization Table -->
+      <div class="card mt-8">
+        <div class="card-header"><h3>📋 Amortization Table</h3></div>
+        <div class="card-body" style="max-height:400px;overflow:auto">
+          <table class="table-container amortization-table">
+            <thead><tr><th>Month</th><th>Payment</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead>
+            <tbody id="amortizationBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <div id="toast-container" class="toast-container"></div>
+  <script src="/js/app.js"></script>
+  <script src="/js/mortgage.js"></script>
+</body>
+</html>

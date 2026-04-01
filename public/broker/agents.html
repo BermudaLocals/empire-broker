@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Management — Empire Broker Pro</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="mobile-toggle">☰</div>
+      <div class="sidebar-logo"><div class="logo-icon">🏛️</div><h1>Empire<small>Broker Pro</small></h1></div>
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="user-avatar">?</div>
+          <div class="user-details"><div class="name" id="user-name">User</div><div class="role" id="user-role">Role</div></div>
+          <button class="logout-btn" data-logout>🚪</button>
+        </div>
+      </div>
+    </aside>
+    
+    <main class="main-content">
+      <header class="page-header flex-between">
+        <div>
+          <h2>👔 Agent Management</h2>
+          <p class="subtitle">Manage agents and track their performance</p>
+        </div>
+        <button class="btn btn-primary" onclick="newAgent()">➕ Add Agent</button>
+      </header>
+      
+      <div class="search-bar mb-4">
+        <input type="text" id="agentSearch" class="form-control" placeholder="🔍 Search agents by name or email..." oninput="renderAgents(this.value)">
+      </div>
+      
+      <div class="card" id="agentsTable">
+        <div class="card-body">
+          <table class="table-container">
+            <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>License</th><th>Split</th><th>Status</th><th class="text-right">Actions</th></tr></thead>
+            <tbody id="agentsBody"><tr><td colspan="7" class="text-center">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Agent Modal -->
+  <div class="modal-overlay" id="agentModal">
+    <div class="modal">
+      <div class="modal-header"><h3 id="agentModalTitle">Add Agent</h3><button class="modal-close" onclick="closeModal('agentModal')">×</button></div>
+      <div class="modal-body">
+        <input type="hidden" id="agentId">
+        <div class="form-group"><label>Full Name *</label><input type="text" id="agentName" class="form-control" placeholder="John Doe" required></div>
+        <div class="form-row">
+          <div class="form-group"><label>Email *</label><input type="email" id="agentEmail" class="form-control" placeholder="agent@email.com"></div>
+          <div class="form-group"><label>Phone</label><input type="tel" id="agentPhone" class="form-control" placeholder="(555) 123-4567"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>License Number</label><input type="text" id="agentLicense" class="form-control" placeholder="12345678"></div>
+          <div class="form-group"><label>Commission Split (%)</label><input type="number" id="agentSplit" class="form-control" value="50" min="0" max="100" step="1" required></div>
+        </div>
+        <div class="form-group"><label><input type="checkbox" id="agentActive" checked> Active Agent</label></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('agentModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveAgent()">Save Agent</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- View Performance Modal -->
+  <div class="modal-overlay" id="viewPerformanceModal">
+    <div class="modal" style="max-width:800px">
+      <div class="modal-header"><h3>Agent Performance</h3><button class="modal-close" onclick="closeModal('viewPerformanceModal')">×</button></div>
+      <div class="modal-body" id="viewPerformanceContent"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('viewPerformanceModal')">Close</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Performance Entry Modal -->
+  <div class="modal-overlay" id="performanceModal">
+    <div class="modal">
+      <div class="modal-header"><h3>Add Performance Entry</h3><button class="modal-close" onclick="closeModal('performanceModal')">×</button></div>
+      <div class="modal-body">
+        <input type="hidden" id="perfAgentId">
+        <div class="form-row">
+          <div class="form-group"><label>Month</label>
+            <select id="perfMonth" class="form-control">
+              <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+              <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+              <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+              <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Year</label><input type="number" id="perfYear" class="form-control" value="2026"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Listings</label><input type="number" id="perfListings" class="form-control" value="0" min="0"></div>
+          <div class="form-group"><label>Sales</label><input type="number" id="perfSales" class="form-control" value="0" min="0"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Volume ($)</label><input type="number" id="perfVolume" class="form-control" value="0" min="0"></div>
+          <div class="form-group"><label>Commission ($)</label><input type="number" id="perfCommission" class="form-control" value="0" min="0"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('performanceModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="savePerformanceEntry()">Save Entry</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="toast-container" class="toast-container"></div>
+  <script src="/js/app.js"></script>
+  <script src="/js/broker.js"></script>
+</body>
+</html>

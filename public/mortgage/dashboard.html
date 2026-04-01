@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Empire Broker Pro</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="mobile-toggle">☰</div>
+      <div class="sidebar-logo">
+        <div class="logo-icon">🏛️</div>
+        <h1>Empire<small>Broker Pro</small></h1>
+      </div>
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="user-avatar">?</div>
+          <div class="user-details">
+            <div class="name" id="user-name">User</div>
+            <div class="role" id="user-role">Role</div>
+          </div>
+          <button class="logout-btn" data-logout>🚪</button>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="page-header">
+        <h2>📊 Mortgage Broker Dashboard</h2>
+        <p class="subtitle">Overview of your mortgage pipeline and performance</p>
+      </header>
+      
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-icon">👥</span>
+          <span class="stat-value" id="statClients">0</span>
+          <span class="stat-label">Total Clients</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">🔄</span>
+          <span class="stat-value" id="statActive">0</span>
+          <span class="stat-label">Active Pipeline</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">💰</span>
+          <span class="stat-value text-gold" id="statCommission">$0</span>
+          <span class="stat-label">YTD Commission</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">📅</span>
+          <span class="stat-value" id="statAppointments">0</span>
+          <span class="stat-label">Upcoming Appointments</span>
+        </div>
+      </div>
+      
+      <!-- Pipeline -->
+      <div class="card mt-8">
+        <div class="card-header"><h3>🔄 Loan Pipeline</h3></div>
+        <div class="card-body">
+          <div class="pipeline" id="pipelineStages">
+            <div class="pipeline-stage"><div class="count">0</div><div class="label">Pre-Qualified</div></div>
+            <div class="pipeline-stage"><div class="count">0</div><div class="label">Application</div></div>
+            <div class="pipeline-stage"><div class="count">0</div><div class="label">Processing</div></div>
+            <div class="pipeline-stage"><div class="count">0</div><div class="label">Underwriting</div></div>
+            <div class="pipeline-stage"><div class="count">0</div><div class="label">Closing</div></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="grid-2 mt-8">
+        <!-- Recent Clients -->
+        <div class="card">
+          <div class="card-header flex-between">
+            <h3>👥 Recent Clients</h3>
+            <a href="clients.html" class="btn btn-secondary btn-sm">View All</a>
+          </div>
+          <div class="card-body">
+            <table class="table-container">
+              <thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Updated</th></tr></thead>
+              <tbody id="recentClients"><tr><td colspan="4" class="text-center text-muted">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- Commission Trend -->
+        <div class="card">
+          <div class="card-header"><h3>📈 Commission Trend</h3></div>
+          <div class="card-body" style="height:250px">
+            <canvas id="commissionChart"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-8 text-center">
+        <a href="calculator.html" class="btn btn-primary btn-lg">🧮 Go to Calculator</a>
+      </div>
+    </main>
+  </div>
+  
+  <div id="toast-container" class="toast-container"></div>
+  <script src="/js/app.js"></script>
+  <script src="/js/mortgage.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Empire Broker Pro</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="mobile-toggle">☰</div>
+      <div class="sidebar-logo"><div class="logo-icon">🏛️</div><h1>Empire<small>Broker Pro</small></h1></div>
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="user-avatar">?</div>
+          <div class="user-details"><div class="name" id="user-name">User</div><div class="role" id="user-role">Role</div></div>
+          <button class="logout-btn" data-logout>🚪</button>
+        </div>
+      </div>
+    </aside>
+    
+    <main class="main-content">
+      <header class="page-header">
+        <h2>🏠 Real Estate Agent Dashboard</h2>
+        <p class="subtitle">Your listings, buyers, and sales performance</p>
+      </header>
+      
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card"><span class="stat-icon">🏠</span><span class="stat-value" id="statListings">0</span><span class="stat-label">Total Listings</span></div>
+        <div class="stat-card"><span class="stat-icon">✅</span><span class="stat-value text-success" id="statActiveListings">0</span><span class="stat-label">Active Listings</span></div>
+        <div class="stat-card"><span class="stat-icon">🎯</span><span class="stat-value" id="statSold">0</span><span class="stat-label">Sold Properties</span></div>
+        <div class="stat-card"><span class="stat-icon">👥</span><span class="stat-value" id="statBuyers">0</span><span class="stat-label">Total Buyers</span></div>
+        <div class="stat-card"><span class="stat-icon">💼</span><span class="stat-value" id="statSellers">0</span><span class="stat-label">Total Sellers</span></div>
+        <div class="stat-card"><span class="stat-icon">🏡</span><span class="stat-value" id="statShowings">0</span><span class="stat-label">Showings</span></div>
+        <div class="stat-card"><span class="stat-icon">💰</span><span class="stat-value text-gold" id="statCommission">$0</span><span class="stat-label">Commission</span></div>
+        <div class="stat-card"><span class="stat-icon">📊</span><span class="stat-value" id="statVolume">$0</span><span class="stat-label">Sales Volume</span></div>
+      </div>
+      
+      <div class="grid-2 mt-8">
+        <!-- Recent Listings -->
+        <div class="card">
+          <div class="card-header flex-between">
+            <h3>🏠 Recent Listings</h3>
+            <a href="listings.html" class="btn btn-secondary btn-sm">View All</a>
+          </div>
+          <div class="card-body">
+            <table class="table-container">
+              <thead><tr><th>Address</th><th>Price</th><th>Status</th><th>DOM</th></tr></thead>
+              <tbody id="recentListings"><tr><td colspan="4" class="text-center">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- Listing Distribution -->
+        <div class="card">
+          <div class="card-header"><h3>📊 Listing Status Distribution</h3></div>
+          <div class="card-body" style="height:280px;display:flex;align-items:center;justify-content:center">
+            <canvas id="listingsChart"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-8 text-center">
+        <a href="listings.html" class="btn btn-primary btn-lg mr-4">🏠 Manage Listings</a>
+        <a href="buyers.html" class="btn btn-secondary btn-lg">🔑 Manage Buyers</a>
+      </div>
+    </main>
+  </div>
+  
+  <div id="toast-container" class="toast-container"></div>
+  <script src="/js/app.js"></script>
+  <script src="/js/agent.js"></script>
+</body>
+</html>

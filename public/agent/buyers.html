@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buyer CRM — Empire Broker Pro</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="mobile-toggle">☰</div>
+      <div class="sidebar-logo"><div class="logo-icon">🏛️</div><h1>Empire<small>Broker Pro</small></h1></div>
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="user-avatar">?</div>
+          <div class="user-details"><div class="name" id="user-name">User</div><div class="role" id="user-role">Role</div></div>
+          <button class="logout-btn" data-logout>🚪</button>
+        </div>
+      </div>
+    </aside>
+    
+    <main class="main-content">
+      <header class="page-header flex-between">
+        <div>
+          <h2>🔑 Buyer CRM</h2>
+          <p class="subtitle">Manage buyer clients and find matching properties</p>
+        </div>
+        <div>
+          <button class="btn btn-secondary mr-4" onclick="loadAllProperties()">🏠 View All Properties</button>
+          <button class="btn btn-primary" onclick="newBuyer()">➕ Add Buyer</button>
+        </div>
+      </header>
+      
+      <!-- Search + Matching -->
+      <div class="search-bar mb-4">
+        <input type="text" id="buyerSearch" class="form-control" placeholder="🔍 Search buyers by name or email..." oninput="renderBuyers(this.value)">
+      </div>
+      
+      <!-- Buyers Table -->
+      <div class="card" id="buyersTable">
+        <div class="card-body">
+          <table class="table-container">
+            <thead><tr><th>Name</th><th>Email</th><th>Budget</th><th>Criteria</th><th>Status</th><th>Rental?</th><th class="text-right">Actions</th></tr></thead>
+            <tbody id="buyersBody"><tr><td colspan="7" class="text-center">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Buyer Modal -->
+  <div class="modal-overlay" id="buyerModal">
+    <div class="modal">
+      <div class="modal-header"><h3 id="buyerModalTitle">Add Buyer</h3><button class="modal-close" onclick="closeModal('buyerModal')">×</button></div>
+      <div class="modal-body">
+        <input type="hidden" id="buyerId">
+        <div class="form-row">
+          <div class="form-group"><label>Full Name *</label><input type="text" id="buyerName" class="form-control" placeholder="John Doe" required></div>
+          <div class="form-group"><label>Status</label>
+            <select id="buyerStatus" class="form-control">
+              <option value="active">Active</option>
+              <option value="pending">Pending</option>
+              <option value="purchased">Purchased</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Email</label><input type="email" id="buyerEmail" class="form-control" placeholder="john@email.com"></div>
+          <div class="form-group"><label>Phone</label><input type="tel" id="buyerPhone" class="form-control" placeholder="(555) 123-4567"></div>
+        </div>
+        <div class="card" style="background:rgba(0,0,0,0.2);margin:16px 0;padding:16px">
+          <h4 style="margin-bottom:12px;color:var(--gold)">📋 Search Criteria</h4>
+          <div class="form-row">
+            <div class="form-group"><label>Min Price</label><input type="number" id="buyerMinPrice" class="form-control" placeholder="200000"></div>
+            <div class="form-group"><label>Max Price</label><input type="number" id="buyerMaxPrice" class="form-control" placeholder="500000"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Min Beds</label><input type="number" id="buyerMinBeds" class="form-control" placeholder="2"></div>
+            <div class="form-group"><label>Min Baths</label><input type="number" id="buyerMinBaths" class="form-control" step="0.5" placeholder="1"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>City</label><input type="text" id="buyerCity" class="form-control" placeholder="Any City"></div>
+            <div class="form-group"><label>Sq Ft Min</label><input type="number" id="buyerMinSqft" class="form-control" placeholder="1000"></div>
+          </div>
+        </div>
+        <div class="form-group"><label><input type="checkbox" id="buyerLookingForRental"> Looking for Rental</label></div>
+        <div class="form-group"><label>Pre-Approval Amount</label><input type="number" id="buyerPreApproval" class="form-control" placeholder="500000"></div>
+        <div class="form-group"><label>Notes</label><textarea id="buyerNotes" class="form-control" rows="2" placeholder="Additional notes..."></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('buyerModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveBuyer()">Save Buyer</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- View Buyer Modal -->
+  <div class="modal-overlay" id="viewBuyerModal">
+    <div class="modal" style="max-width:700px">
+      <div class="modal-header"><h3>Buyer Profile</h3><button class="modal-close" onclick="closeModal('viewBuyerModal')">×</button></div>
+      <div class="modal-body" id="viewBuyerContent"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('viewBuyerModal')">Close</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Match Properties Modal -->
+  <div class="modal-overlay" id="matchModal">
+    <div class="modal" style="max-width:800px">
+      <div class="modal-header"><h3>🏠 Matching Properties</h3><button class="modal-close" onclick="closeModal('matchModal')">×</button></div>
+      <div class="modal-body" id="matchModalContent"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('matchModal')">Close</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- All Properties Modal -->
+  <div class="modal-overlay" id="allPropertiesModal">
+    <div class="modal" style="max-width:900px;max-height:80vh">
+      <div class="modal-header"><h3>🏠 Available Properties</h3><button class="modal-close" onclick="closeModal('allPropertiesModal')">×</button></div>
+      <div class="modal-body" style="max-height:60vh;overflow:auto" id="allPropertiesContent"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('allPropertiesModal')">Close</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="toast-container" class="toast-container"></div>
+  <script src="/js/app.js"></script>
+  <script src="/js/agent.js"></script>
+</body>
+</html>
