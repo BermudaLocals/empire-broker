@@ -44,3 +44,4 @@ Thumbs.db
 # Uploads
 uploads/
 temp/
+*.env*
